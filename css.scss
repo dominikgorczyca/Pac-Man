@@ -1,0 +1,549 @@
+:root {
+    --yellow-sprite-x: ;
+    --yellow-sprite-y: ;
+    --red-sprite-x: ;
+    --red-sprite-y: ;
+    --pink-sprite-x: ;
+    --pink-sprite-y: ;
+    --blue-sprite-x: ;
+    --blue-sprite-y: ;
+    --orange-sprite-x: ;
+    --orange-sprite-y: ;
+
+    --yellow-animation-length: 190ms;
+    --red-animation-length: 200ms;
+    --pink-animation-length: 200ms;
+    --blue-animation-length: 200ms;
+    --orange-animation-length: 200ms;
+}
+html {
+    font-size: 0.625em;
+}
+
+@media (max-width: 600px), (max-height: 700px) {
+    html {
+        font-size: 0.3125em;
+    }
+}
+
+body, #game, #info, #lives {
+    display: flex;
+}
+body {
+    box-sizing: border-box;
+    margin: 0;
+    background-color: #000000;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 1em 0;
+    font-family: "joystick", Arial, sans-serif;
+}
+#game {
+    flex-direction: column;
+    display: none;
+}
+#info {
+    box-sizing: border-box;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
+}
+#score {
+    color: white;
+    margin: 0;
+    font-size: 2rem;
+}   
+.live {
+    width: 3.2rem;
+    height: 2.6rem;
+    object-fit: none;
+    object-position: -26rem -3.2rem;
+}
+
+@media (max-width: 600px), (max-height: 700px) {
+    .live {
+        content:url(sprites_small.png);
+    }
+}
+
+#game-board {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 56rem;
+    height: 62rem;
+    display: grid;
+    grid-template-columns: repeat(28, 2rem);
+}
+/* GAME BOARD GENERAL */
+
+#game-board > * {
+    position: relative;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+}
+
+#start, #game-start {
+    position: absolute;
+    margin: auto;
+    width: 100%;
+    top: 54%;
+    text-align: center;
+    color: yellow;
+    font-size: 2.4rem;
+    z-index: 1;
+    user-select: none;
+}
+
+/* OBJECTS AND WALLS  */
+.wall {
+    box-sizing: border-box;
+    overflow: hidden;
+    background-image: url("map.png");
+    z-index: 1;
+}
+@media (max-width: 600px), (max-height: 700px) {
+    .wall {
+        background-image: url("small_map.png");
+    }
+}
+
+.blank,
+.wall-empty {
+    background-color: black;
+}
+
+.wall > *,
+.wall-empty > * {
+    box-sizing: border-box;
+    background-color: black;
+    display: block;
+    position: relative;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: .2rem solid #161693;
+    border-radius: 80%;
+    z-index: 1;
+}
+
+.point,
+.big-point {
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    background-color: #ffb897;
+    border-radius: 0;
+    z-index: 10;
+}
+
+.point {
+    border: .8rem solid black;
+}
+
+.big-point {
+    border: .4rem solid black;
+    border-radius: 45%;
+    background-color: #ffb897;
+}
+.gate {
+    background-color: #ffb897;
+    border-top: .7rem solid black;
+    border-bottom: .7rem solid black;
+}
+
+/* CHARACTERS */
+.yellow,
+.red,
+.pink,
+.blue,
+.orange,
+.points::after {
+    image-rendering: pixelated;
+    position: absolute;
+    top: -0.45rem;
+    left: -0.55rem;
+    width: 3rem;
+    height: 2.8rem;
+}
+
+.points::after {
+    background-image: url("sprites.png");
+    background-position: var(--yellow-sprite-x) var(--yellow-sprite-y);
+}
+
+.yellow-visible,
+.red-visible,
+.pink-visible,
+.blue-visible,
+.orange-visible {
+    background-image: url("sprites.png");
+    z-index: 101;
+    will-change: transform background-position;
+}
+
+@media (max-width: 600px), (max-height: 700px) {
+    .points::after, 
+    .yellow-visible,
+    .red-visible,
+    .pink-visible,
+    .blue-visible,
+    .orange-visible {
+        background-image: url("sprites_small.png");
+    }
+}
+
+.yellow-visible {
+    background-position: var(--yellow-sprite-x) var(--yellow-sprite-y);
+    transition: transform var(--yellow-animation-length) linear;
+    z-index: 100;
+}
+
+.red-visible {
+    background-position: var(--red-sprite-x) var(--red-sprite-y);
+    transition: transform var(--red-animation-length) linear;
+    z-index: 104;
+}
+.pink-visible {
+    background-position: var(--pink-sprite-x) var(--pink-sprite-y);
+    transition: transform var(--pink-animation-length) linear;
+    z-index: 103;
+}
+.blue-visible {
+    background-position: var(--blue-sprite-x) var(--blue-sprite-y);
+    transition: transform var(--blue-animation-length) linear;
+    z-index: 102;
+}
+.orange-visible {
+    background-position: var(--orange-sprite-x) var(--orange-sprite-y);
+    transition: transform var(--orange-animation-length) linear;
+}
+
+/* Animations */
+.yellow-animation-move {
+    animation: var(--yellow-animation-length) forwards steps(1, end) yellow;
+}
+.red-animation-move {
+    animation: var(--red-animation-length) forwards steps(1, end) red;
+}
+.pink-animation-move {
+    animation: var(--pink-animation-length) forwards steps(1, end) pink;
+    z-index: 10000;
+}
+.blue-animation-move {
+    animation: var(--blue-animation-length) forwards steps(1, end) blue;
+}
+.orange-animation-move {
+    animation: var(--orange-animation-length) forwards steps(1, end) orange;
+}
+.red-retreat,
+.pink-retreat {
+    background-position: -35.2rem -16rem;
+    animation: 150ms linear forwards redPinkRetreatPosition;
+}
+.blue-retreat {
+    animation: 250ms linear forwards blueRetreatPosition, forwards steps(1, end) blueRetreatSprite;
+}
+.orange-retreat {
+    animation: 250ms linear forwards orangeRetreatPosition, forwards steps(1, end) orangeRetreatSprite;
+}
+.red-revive {
+    animation: 600ms forwards linear redRevive, 200ms forwards steps(1, end) red 3;
+}
+.pink-revive {
+    animation: 1000ms forwards linear pinkRevive, 200ms forwards steps(1, end) pink 5;
+}
+.blue-revive {
+    animation: 5000ms forwards linear blueRevive, 200ms forwards steps(1, end) blue 25;
+}
+.orange-revive {
+    animation: 15000ms forwards linear orangeRevive, 200ms forwards steps(1, end) orange 75;
+}
+
+.yellow-death-animation {
+    animation: 1.5s forwards steps(1, end) yellowDeath;
+}
+
+.blinking-animation {
+    animation: 1.5s forwards steps(1, end) blink;
+}
+
+.blinking-animation > *,
+.blinking-animation-corner > * {
+    animation: 1.5s forwards steps(1, end) blink2;
+}
+@keyframes yellow {
+    0%, 70%, 100% {
+        background-position: -3.2rem var(--yellow-sprite-y);
+    }
+    30% {
+        background-position:  0rem var(--yellow-sprite-y);
+    }
+    80% {
+        background-position: -6.4rem 0rem;
+    }
+}
+@keyframes red {
+    0%, 100% {
+        background-position: var(--red-sprite-x) var(--red-sprite-y);
+    }
+    50% {
+        background-position: calc(var(--red-sprite-x) - 3.2rem) var(--red-sprite-y);
+    }
+}
+@keyframes pink {
+    0%, 100% {
+        background-position: var(--pink-sprite-x) var(--pink-sprite-y);
+    }
+    50% {
+        background-position: calc(var(--pink-sprite-x) - 3.2rem) var(--pink-sprite-y);
+    }
+}
+@keyframes blue {
+    0%, 100% {
+        background-position: var(--blue-sprite-x) var(--blue-sprite-y);
+    }
+    50% {
+        background-position: calc(var(--blue-sprite-x) - 3.2rem) var(--blue-sprite-y);
+    }
+}
+@keyframes orange {
+    0%, 100% {
+        background-position: var(--orange-sprite-x) var(--orange-sprite-y);
+    }
+    50% {
+        background-position: calc(var(--orange-sprite-x) - 3.2rem) var(--orange-sprite-y);
+    }
+}
+@keyframes redPinkRetreatPosition {
+    0% {
+        transform: translate(-1rem, 0);
+    }
+    33% {
+        transform: translate(-1rem, 2rem);
+    }
+    66% {
+        transform: translate(-1rem, 4rem);
+    }
+    100% {
+        transform: translate(-1rem, 6rem);
+    }
+}
+@keyframes blueRetreatPosition {
+    0% {
+        transform: translate(-1rem, 0);
+    }
+    60% {
+        transform: translate(-1rem, 6rem);
+    }
+    100% {
+        transform: translate(-5rem, 6rem);
+    }
+}
+@keyframes orangeRetreatPosition {
+    0% {
+        transform: translate(-1rem, 0);
+    }
+    60% {
+        transform: translate(-1rem, 6rem);
+    }
+    100% {
+        transform: translate(3rem, 6rem);
+    }
+}
+@keyframes blueRetreatSprite {
+    0% {
+        background-position: -35.2rem -16rem;
+    }
+    60% {
+        background-position: -28.8rem -16rem;
+    }
+    100% {
+        background-position: -28.8rem -16rem;
+    }
+}
+@keyframes orangeRetreatSprite {
+    0% {
+        background-position: -35.2rem -16rem;
+    }
+    60% {
+        background-position: -25.6rem -16rem;
+    }
+    100% {
+        background-position: -25.6rem -16rem;
+    }
+}
+@keyframes redRevive {
+    from {
+        transform: translate(-1rem, 0rem);
+    }
+    to {
+        transform: translate(-1rem, -6rem);
+    }
+}
+@keyframes pinkRevive {
+    0% {
+        transform: translate(-1rem, 0rem);
+    }
+    20% {
+        transform: translate(-1rem, 2rem);
+    }
+    100% {
+        transform: translate(-1rem, -6rem);
+    }
+}
+@keyframes blueRevive {
+    0%, 80% {
+        transform: translate(-1rem, 0rem);
+    }
+    4%, 20%, 36%, 52%, 68% {
+        transform: translate(-1rem, -2rem);
+    }
+    12%, 28%, 44%, 60%, 76% {
+        transform: translate(-1rem, 2rem);
+    }
+    88% {
+        transform: translate(3rem, 0rem);
+    }
+    100% {
+        transform: translate(3rem, -6rem);
+    }
+}
+
+@keyframes orangeRevive {
+    0%, 93.3% {
+        transform: translate(-1rem, 0);
+    }
+    1.3%, 6.6%, 12%, 17.3%, 22.6%, 28%, 33.3%, 38.6%, 44%, 49.3%, 54.6%, 60%, 65.3%, 70.6%, 76%, 81.3%, 86.6%, 92% {
+        transform: translate(-1rem, -2rem);
+    }
+    4%, 9.3%, 14.6%, 20%, 25.3%, 30.6%, 36%, 41.3%, 46.6%, 52%, 57.3%, 62.6%, 68%, 73.3%, 78.6%, 84%, 89.3%{
+        transform: translate(-1rem, 2rem);
+    }
+    96% {
+        transform: translate(-5rem, 0);
+    }
+    100% {
+        transform: translate(-5rem, -6rem);
+    }
+}
+
+@keyframes blink {
+    0% {
+        background-color: white;
+    }
+
+    12.5% {
+        background-color: #161693;
+    }
+
+    25% {
+        background-color: white;
+    }
+
+    37.5% {
+        background-color: #161693;
+    }
+
+    50% {
+        background-color: white;
+    }
+
+    62.5% {
+        background-color: #161693;
+    }
+
+    75% {
+        background-color: white;
+    }
+
+    87.5% {
+        background-color: #161693;
+    }
+}
+
+@keyframes blink2 {
+    0% {
+        border-color: white;
+    }
+
+    12.5% {
+        border-color: #161693;
+    }
+
+    25% {
+        border-color: white;
+    }
+
+    37.5% {
+        border-color: #161693;
+    }
+
+    50% {
+        border-color: white;
+    }
+
+    62.5% {
+        border-color: #161693;
+    }
+
+    75% {
+        border-color: white;
+    }
+
+    87.5% {
+        border-color: #161693;
+    }
+}
+
+@keyframes yellowDeath {
+    0% {
+        background-position: -9.6rem 0rem;
+    }
+
+    9% {
+        background-position: -12.8rem 0rem;
+    }
+
+    18% {
+        background-position: -16rem 0rem;
+    }
+
+    27% {
+        background-position: -19.2rem 0rem;
+    }
+
+    36% {
+        background-position: -22.4rem 0rem;
+    }
+
+    45% {
+        background-position: -25.6rem 0rem;
+    }
+
+    54% {
+        background-position: -28.8rem 0rem;
+    }
+
+    63% {
+        background-position: -32rem 0rem;
+    }
+
+    72% {
+        background-position: -35.2rem 0rem;
+    }
+
+    81% {
+        background-position: -38.4rem 0rem;
+    }
+
+    90% {
+        background-position: -41.6rem -0.64rem;
+    }
+
+    100% {
+        visibility: hidden;
+    }
+}
