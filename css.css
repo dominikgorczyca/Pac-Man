@@ -78,15 +78,13 @@ body {
 .live {
   width: 3.2rem;
   height: 2.6rem;
-  -o-object-fit: none;
-     object-fit: none;
-  -o-object-position: -26rem -3.2rem;
-     object-position: -26rem -3.2rem;
+  background-image: url(sprites.png);
+  background-position: -26rem -3.2rem;
 }
 
 @media (max-width: 600px), (max-height: 700px) {
   .live {
-    content: url(sprites_small.png);
+    background-image: url(sprites_small.png);
   }
 }
 

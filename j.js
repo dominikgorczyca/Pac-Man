@@ -1,3 +1,4 @@
+'use strict';
 const game = document.getElementById("game");
 const gameBoard = document.getElementById("game-board");
 const gameStart = document.getElementById('game-start')
@@ -7,10 +8,12 @@ const lives = document.getElementById("lives");
 const root = document.documentElement.style;
 
 let soundtrack = document.createElement("audio");
+let sound = document.createElement("audio");
 soundtrack.loop = "true";
 soundtrack.volume = 0.7;
-let sound = document.createElement("audio");
 sound.volume = 0.5;
+soundtrack.preload = "none"
+sound.preload = "none"
 
 //What change is made to current position after going in some direction
 const startingPositions = [658, 322, 406, 404, 408];
@@ -62,6 +65,7 @@ const characters = [{
     direction: "ArrowLeft",
     directionOld: undefined,
     directionList: ["ArrowUp", "ArrowUp", "ArrowUp"],
+    progress: 0,
     position: 38,
     nextPosition: undefined,
     scatterTarget: 27,
@@ -76,6 +80,7 @@ const characters = [{
     direction: "ArrowDown",
     directionOld: undefined,
     directionList: ["ArrowDown", "ArrowUp", "ArrowUp", "ArrowUp", "ArrowUp"],
+    progress: 0,
     position: 406,
     nextPosition: undefined,
     scatterTarget: 0,
@@ -90,6 +95,7 @@ const characters = [{
     direction: "ArrowUp",
     directionOld: undefined,
     directionList: ["ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowRight", "ArrowRight", "ArrowUp", "ArrowUp", "ArrowUp"],
+    progress: 0,
     position: 404,
     nextPosition: undefined,
     scatterTarget: 867,
@@ -104,6 +110,7 @@ const characters = [{
     direction: "ArrowUp",
     directionOld: undefined,
     directionList: ["ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowLeft", "ArrowUp", "ArrowUp", "ArrowUp"],
+    progress: 0,
     position: 408,
     nextPosition: undefined,
     scatterTarget: 840,
@@ -147,7 +154,7 @@ soundtrack.addEventListener('timeupdate', () => {
 
 function startLevel() {
     if (newLevel == true) {
-        gameStartLength = 4200;
+        gameStartLength = 4300;
         sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/game_start.wav";
         makeLevel();
         sound.play();
@@ -161,32 +168,15 @@ function startLevel() {
         livesLost++;
         characterMove(0);
         characterMove(1);
-        ghostRevive(2, 0);
-        ghostRevive(3, 0);
-        ghostRevive(4, 0);
+        ghostRevive(2);
+        ghostRevive(3);
+        ghostRevive(4);
 
         collisionInterval = setInterval(checkCollisions, 10)
         ghostModeInterval = setTimeout(changeModes, 5000);
     }, gameStartLength)
 }
 function makeLevel() {
-    const gameClass = {
-        0: "blank",
-        1: "left-right wall",
-        2: "top-bottom wall",
-        3: "top-right wall",
-        4: "top-left wall",
-        5: "bottom-right wall",
-        6: "bottom-left wall",
-        7: "top wall",
-        8: "bottom wall",
-        9: "right wall",
-        10: "left wall",
-        11: "gate wall",
-        12: "wall-empty" 
-    }
-
-
     const gameArray = [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 18, 19, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1,
         9, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 11, 13, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 9,
         9, 126, 4, 10, 10, 5, 126, 4, 10, 10, 10, 5, 126, 11, 13, 126, 4, 10, 10, 10, 5, 126, 4, 10, 10, 5, 126, 9,
@@ -262,12 +252,15 @@ function setStartingProperties() {
     scoreElement.innerHTML = "Score " + score;
 
     for (let i = 0; i < characters.length; i++) {
+        characters[i].progress = 0;
         characters[i].position = startingPositions[i];
         characters[i].direction = i < 2 ? "ArrowLeft" : characters[i].directionList[0];
         characters[i].characterNode = elements[characters[i].position].children[i];
         characters[i].characterNode.classList.add(`${characters[i].name}-visible`);
         characters[i].mode = "normal";
         characters[i].status = "normal";
+        characters[i].characterNode.removeEventListener("animationiteration", animationIteration);
+        characters[i].characterNode.removeEventListener("animationend", animationEnd);
 
         if (i == 0) {
             root.setProperty(`--${characters[i].name}-sprite-x`, "-6.4rem")
@@ -485,9 +478,9 @@ function getRandomDirection(i) {
         const random = ~~(Math.random() * 4);
         newDirection = Object.keys(positionChange)[random];
 
-        newPosition = characters[i].position + positionChange[newDirection];
+        nextPosition = characters[i].position + positionChange[newDirection];
 
-    } while (elements[newPosition].classList.contains("wall") ||
+    } while (elements[nextPosition].classList.contains("wall") ||
         oppositeDirection[newDirection] == characters[i].direction)
 
     characters[i].direction = newDirection;
@@ -702,7 +695,7 @@ function makeGhostsScared() {
             }
             intervalCount++;
         }, 300)
-    }, 800)
+    }, 2100)
 }
 function changeGhostDirections() {
     for (let i = 1; i < 5; i++) {
@@ -777,51 +770,67 @@ function ghostRetreat(i) {
         soundtrack.play()
         characters[i].position = i == 1 ? 406 : startingPositions[i]
         characters[i].characterNode.classList.remove(`${characters[i].name}-visible`, `${characters[i].name}-animation-move`, `${characters[i].name}-retreat`);
-
         characters[i].characterNode.style.transform = "translateX(-1rem)";
         characters[i].characterNode = elements[characters[i].position].children[i];
         characters[i].animationLength = 200;
         characters[i].characterNode.classList.add(`${characters[i].name}-visible`, `${characters[i].name}-revive`)
         characters[i].mode = "normal";
         characters[i].animationLength = 200;
-        ghostRevive(i, 0);
+        characters[i].progress = 0;
+        characters[i].direction = characters[i].directionList[characters[i].progress];
+        getSprite(i);
+        ghostRevive(i);
+       
     }, i > 2 ? 250 : 150)
 }
 //revive animation progress
-function ghostRevive(i, progress) {
-    if (characters[i].direction != characters[i].directionList[progress] &&
-        characters[i].directionList[progress] != undefined &&
-        characters[i].mode != "frightened") {
-        characters[i].direction = characters[i].directionList[progress];
-        getSprite(i);
-    }
+function ghostRevive(i) {
+    characters[i].progress = 1;
+    getSprite(i);
 
-    if (progress != characters[i].directionList.length && newLevel == undefined) {
+    characters[i].characterNode.addEventListener("animationiteration", animationIteration);
+    characters[i].characterNode.addEventListener("animationend", animationEnd);
+}
+function animationIteration (event) {
+    let i;
+    for(let j = 1; j < 5; j++) {
+        if(event.animationName == characters[j].name) {
+            i = j;
+            break;
+        }
+    }
+    characters[i].direction = characters[i].directionList[characters[i].progress];
+    getSprite(i);
+    characters[i].progress++;
+    if (characters[i].progress != characters[i].directionList.length && newLevel == undefined) {
         if (characters[0].status == "freeze") {
             characters[i].characterNode.style.animationPlayState = "paused";
-        } else {
-            characters[i].characterNode.style.animationPlayState = "running";
         }
-
-        setTimeout(() => {
-            characters[i].animationStart = performance.now();
-            if (characters[0].status != "freeze") {
-                progress++;
-                characters[i].animationLength = 200;
-            }
-
-            ghostRevive(i, progress)
-        }, characters[i].animationLength);
-    } else if (newLevel == undefined) {
-        characters[i].characterNode.classList.remove(`${characters[i].name}-visible`, `${characters[i].name}-revive`)
-        characters[i].position = 322;
-        characters[i].characterNode = elements[characters[i].position].children[i];
-        characters[i].characterNode.classList.add(`${characters[i].name}-visible`);
-        characters[i].status = "normal"
-        characters[i].direction = "ArrowLeft"
-        getSprite(i);
-        characterMove(i);
     }
+}
+function animationEnd (event) {
+    //there are two animations but I need to catch only one so I am filtering out the the long
+    if(event.animationName.length > 6) {
+        return;
+    }
+    let i;
+
+    for(let j = 1; j < 5; j++) {
+        if(event.animationName == characters[j].name) {
+            i = j;
+            break;
+        }
+    }
+    characters[i].characterNode.removeEventListener("animationiteration", animationIteration);
+    characters[i].characterNode.removeEventListener("animationend", animationEnd);
+    characters[i].characterNode.classList.remove(`${characters[i].name}-visible`, `${characters[i].name}-revive`)
+    characters[i].position = 322;
+    characters[i].characterNode = elements[characters[i].position].children[i];
+    characters[i].characterNode.classList.add(`${characters[i].name}-visible`);
+    characters[i].status = "normal"
+    characters[i].direction = "ArrowLeft"
+    getSprite(i);
+    characterMove(i);
 }
 function gameOver() {
     stopAnimations();
