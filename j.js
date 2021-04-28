@@ -307,7 +307,7 @@ function changeModes() {
     }
     changeGhostDirections();
 }
-function checkCollisions() {
+async function checkCollisions() {
     const yellowTransform = new WebKitCSSMatrix(getComputedStyle(characters[0].characterNode).transform);
     let yellowTranslateX = yellowTransform.e;
     let yellowTranslateY = yellowTransform.f;
