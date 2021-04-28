@@ -137,12 +137,14 @@ let whichMunch = 1;
 
 document.addEventListener("click", startGame); 
 
-function startGame() {
-    gameStart.style.display = "none";
-    game.style.display = "block ";
-    startLevel();
-    document.removeEventListener("click", startGame)
-}
+// function startGame() {
+//     gameStart.style.display = "none";
+//     game.style.display = "block ";
+//     startLevel();
+//     document.removeEventListener("click", startGame)
+// }
+
+startLevel();
 
 soundtrack.addEventListener('timeupdate', () => {
     var buffer = 0.3;
