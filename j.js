@@ -135,16 +135,16 @@ let livesLost = 0;
 let gameStartLength = 4200;
 let whichMunch = 1;
 
-document.addEventListener("click", startGame); 
+// document.addEventListener("click", startGame); 
 
-// function startGame() {
-//     gameStart.style.display = "none";
-//     game.style.display = "block ";
-//     startLevel();
-//     document.removeEventListener("click", startGame)
-// }
+startGame();
 
-startLevel();
+function startGame() {
+    gameStart.style.display = "none";
+    game.style.display = "block ";
+    startLevel();
+    document.removeEventListener("click", startGame)
+}
 
 soundtrack.addEventListener('timeupdate', () => {
     var buffer = 0.3;
@@ -156,7 +156,7 @@ soundtrack.addEventListener('timeupdate', () => {
 
 function startLevel() {
     if (newLevel == true) {
-        gameStartLength = 4300;
+        gameStartLength = 100;
         sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/game_start.wav";
         makeLevel();
         sound.play();
