@@ -135,9 +135,7 @@ let livesLost = 0;
 let gameStartLength = 4200;
 let whichMunch = 1;
 
-// document.addEventListener("click", startGame); 
-
-startGame();
+document.addEventListener("click", startGame); 
 
 function startGame() {
     gameStart.style.display = "none";
@@ -156,7 +154,7 @@ soundtrack.addEventListener('timeupdate', () => {
 
 function startLevel() {
     if (newLevel == true) {
-        gameStartLength = 100;
+        gameStartLength = 4300;
         sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/game_start.wav";
         makeLevel();
         sound.play();
