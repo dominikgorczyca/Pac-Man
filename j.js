@@ -12,8 +12,6 @@ let sound = document.createElement("audio");
 soundtrack.loop = "true";
 soundtrack.volume = 0.7;
 sound.volume = 0.5;
-soundtrack.preload = "none"
-sound.preload = "none"
 
 //What change is made to current position after going in some direction
 const startingPositions = [658, 322, 406, 404, 408];
@@ -155,13 +153,13 @@ soundtrack.addEventListener('timeupdate', () => {
 function startLevel() {
     if (newLevel == true) {
         gameStartLength = 4300;
-        sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/game_start.wav";
+        sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/game_start.wav";
         makeLevel();
         sound.play();
     }
     setStartingProperties();
     setTimeout(() => {
-        soundtrack.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/siren1.wav";
+        soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/siren1.wav";
         soundtrack.play();
         sound.pause();
         lives.children[livesLost].style.visibility = "hidden";
@@ -634,7 +632,7 @@ function eatPoint(i) {
         } else {
             score += 10;
             if(!sound.src.includes("munch") || sound.paused) {
-                sound.src = `https://pr0grammingteenager.github.io/Pac-Man/audio/munch.wav`;
+                sound.src = `https://dominikgorczyca.github.io/Pac-Man/audio/munch.wav`;
                 sound.play();
             }
         }
@@ -654,7 +652,7 @@ function eatPoint(i) {
     }
 }
 function makeGhostsScared() {
-    soundtrack.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/power_pellet.wav";
+    soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/power_pellet.wav";
     soundtrack.play();
     clearInterval(changingBackInterval);
     isFrightenedWhite = false;
@@ -675,7 +673,7 @@ function makeGhostsScared() {
             if (intervalCount == 10) {
                 clearInterval(changingBackInterval);
                 if(!soundtrack.src.includes("retreating")) {
-                    soundtrack.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/siren1.wav";
+                    soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/siren1.wav";
                     soundtrack.play();
                 }
                 for (let i = 0; i < characters.length; i++) {
@@ -707,7 +705,7 @@ function changeGhostDirections() {
     }
 }
 function gameFreeze(i) {
-    sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/eat_ghost.wav";
+    sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/eat_ghost.wav";
     sound.play();
     const animationStop = performance.now();
     stopAnimations("stop");
@@ -728,7 +726,7 @@ function gameFreeze(i) {
     }
 
     setTimeout(() => {
-        soundtrack.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/retreating.wav";
+        soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/retreating.wav";
         soundtrack.play();
         characters[0].characterNode.classList.add(`yellow-visible`);
         getSprite(i);
@@ -763,9 +761,9 @@ function ghostRetreat(i) {
 
     setTimeout(() => {
         if(characters.some(char => char.mode == "frightened")) {
-            soundtrack.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/power_pellet.wav";
+            soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/power_pellet.wav";
         } else {
-            soundtrack.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/siren1.wav";
+            soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/siren1.wav";
         }
         soundtrack.play()
         characters[i].position = i == 1 ? 406 : startingPositions[i]
@@ -840,10 +838,10 @@ function gameOver() {
         }
 
         characters[0].characterNode.classList.add("yellow-death-animation");
-        sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/death_1.wav";
+        sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/death_1.wav";
         sound.play();
         setTimeout(() => {
-            sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/death_2.wav";
+            sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/death_2.wav";
             sound.play();
         }, 1400)
 
@@ -882,7 +880,7 @@ function gameOver() {
 function gameWin() {
     stopAnimations();
     newLevel = true;
-    sound.src = "https://pr0grammingteenager.github.io/Pac-Man/audio/extend.wav";
+    sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/extend.wav";
     sound.play();
 
     setTimeout(() => {
