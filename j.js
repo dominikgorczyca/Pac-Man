@@ -1,4 +1,3 @@
-'use strict';
 const game = document.getElementById("game");
 const gameBoard = document.getElementById("game-board");
 const gameStart = document.getElementById('game-start')
@@ -8,9 +7,9 @@ const lives = document.getElementById("lives");
 const root = document.documentElement.style;
 
 let soundtrack = document.createElement("audio");
-let sound = document.createElement("audio");
 soundtrack.loop = "true";
 soundtrack.volume = 0.7;
+let sound = document.createElement("audio");
 sound.volume = 0.5;
 
 //What change is made to current position after going in some direction
@@ -63,7 +62,6 @@ const characters = [{
     direction: "ArrowLeft",
     directionOld: undefined,
     directionList: ["ArrowUp", "ArrowUp", "ArrowUp"],
-    progress: 0,
     position: 38,
     nextPosition: undefined,
     scatterTarget: 27,
@@ -78,7 +76,6 @@ const characters = [{
     direction: "ArrowDown",
     directionOld: undefined,
     directionList: ["ArrowDown", "ArrowUp", "ArrowUp", "ArrowUp", "ArrowUp"],
-    progress: 0,
     position: 406,
     nextPosition: undefined,
     scatterTarget: 0,
@@ -93,7 +90,6 @@ const characters = [{
     direction: "ArrowUp",
     directionOld: undefined,
     directionList: ["ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowRight", "ArrowRight", "ArrowUp", "ArrowUp", "ArrowUp"],
-    progress: 0,
     position: 404,
     nextPosition: undefined,
     scatterTarget: 867,
@@ -108,7 +104,6 @@ const characters = [{
     direction: "ArrowUp",
     directionOld: undefined,
     directionList: ["ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowUp", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowLeft", "ArrowUp", "ArrowUp", "ArrowUp"],
-    progress: 0,
     position: 408,
     nextPosition: undefined,
     scatterTarget: 840,
@@ -152,29 +147,46 @@ soundtrack.addEventListener('timeupdate', () => {
 
 function startLevel() {
     if (newLevel == true) {
-        gameStartLength = 4300;
-        sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/game_start.wav";
+        gameStartLength = 4200;
+        sound.src = "audio/game_start.wav";
         makeLevel();
         sound.play();
     }
     setStartingProperties();
     setTimeout(() => {
-        soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/siren1.wav";
+        soundtrack.src = "audio/siren1.wav";
         soundtrack.play();
         sound.pause();
         lives.children[livesLost].style.visibility = "hidden";
         livesLost++;
         characterMove(0);
         characterMove(1);
-        ghostRevive(2);
-        ghostRevive(3);
-        ghostRevive(4);
+        ghostRevive(2, 0);
+        ghostRevive(3, 0);
+        ghostRevive(4, 0);
 
         collisionInterval = setInterval(checkCollisions, 10)
         ghostModeInterval = setTimeout(changeModes, 5000);
     }, gameStartLength)
 }
 function makeLevel() {
+    const gameClass = {
+        0: "blank",
+        1: "left-right wall",
+        2: "top-bottom wall",
+        3: "top-right wall",
+        4: "top-left wall",
+        5: "bottom-right wall",
+        6: "bottom-left wall",
+        7: "top wall",
+        8: "bottom wall",
+        9: "right wall",
+        10: "left wall",
+        11: "gate wall",
+        12: "wall-empty" 
+    }
+
+
     const gameArray = [0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 18, 19, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1,
         9, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 11, 13, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 126, 9,
         9, 126, 4, 10, 10, 5, 126, 4, 10, 10, 10, 5, 126, 11, 13, 126, 4, 10, 10, 10, 5, 126, 4, 10, 10, 5, 126, 9,
@@ -225,7 +237,7 @@ function makeLevel() {
             }
         } else {
             element.className = "wall"
-            element.style.backgroundPosition = `-${gameArray[i] * 2}rem 0`;
+            element.style.objectPosition = `-${gameArray[i] * 2}rem 0`;
         }
 
         gameBoard.append(element);
@@ -250,15 +262,12 @@ function setStartingProperties() {
     scoreElement.innerHTML = "Score " + score;
 
     for (let i = 0; i < characters.length; i++) {
-        characters[i].progress = 0;
         characters[i].position = startingPositions[i];
         characters[i].direction = i < 2 ? "ArrowLeft" : characters[i].directionList[0];
         characters[i].characterNode = elements[characters[i].position].children[i];
         characters[i].characterNode.classList.add(`${characters[i].name}-visible`);
         characters[i].mode = "normal";
         characters[i].status = "normal";
-        characters[i].characterNode.removeEventListener("animationiteration", animationIteration);
-        characters[i].characterNode.removeEventListener("animationend", animationEnd);
 
         if (i == 0) {
             root.setProperty(`--${characters[i].name}-sprite-x`, "-6.4rem")
@@ -476,9 +485,9 @@ function getRandomDirection(i) {
         const random = ~~(Math.random() * 4);
         newDirection = Object.keys(positionChange)[random];
 
-        nextPosition = characters[i].position + positionChange[newDirection];
+        newPosition = characters[i].position + positionChange[newDirection];
 
-    } while (elements[nextPosition].classList.contains("wall") ||
+    } while (elements[newPosition].classList.contains("wall") ||
         oppositeDirection[newDirection] == characters[i].direction)
 
     characters[i].direction = newDirection;
@@ -632,7 +641,7 @@ function eatPoint(i) {
         } else {
             score += 10;
             if(!sound.src.includes("munch") || sound.paused) {
-                sound.src = `https://dominikgorczyca.github.io/Pac-Man/audio/munch.wav`;
+                sound.src = `audio/munch.wav`;
                 sound.play();
             }
         }
@@ -652,7 +661,7 @@ function eatPoint(i) {
     }
 }
 function makeGhostsScared() {
-    soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/power_pellet.wav";
+    soundtrack.src = "audio/power_pellet.wav";
     soundtrack.play();
     clearInterval(changingBackInterval);
     isFrightenedWhite = false;
@@ -673,7 +682,7 @@ function makeGhostsScared() {
             if (intervalCount == 10) {
                 clearInterval(changingBackInterval);
                 if(!soundtrack.src.includes("retreating")) {
-                    soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/siren1.wav";
+                    soundtrack.src = "audio/siren1.wav";
                     soundtrack.play();
                 }
                 for (let i = 0; i < characters.length; i++) {
@@ -693,7 +702,7 @@ function makeGhostsScared() {
             }
             intervalCount++;
         }, 300)
-    }, 2100)
+    }, 800)
 }
 function changeGhostDirections() {
     for (let i = 1; i < 5; i++) {
@@ -705,7 +714,7 @@ function changeGhostDirections() {
     }
 }
 function gameFreeze(i) {
-    sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/eat_ghost.wav";
+    sound.src = "audio/eat_ghost.wav";
     sound.play();
     const animationStop = performance.now();
     stopAnimations("stop");
@@ -726,7 +735,7 @@ function gameFreeze(i) {
     }
 
     setTimeout(() => {
-        soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/retreating.wav";
+        soundtrack.src = "audio/retreating.wav";
         soundtrack.play();
         characters[0].characterNode.classList.add(`yellow-visible`);
         getSprite(i);
@@ -761,74 +770,58 @@ function ghostRetreat(i) {
 
     setTimeout(() => {
         if(characters.some(char => char.mode == "frightened")) {
-            soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/power_pellet.wav";
+            soundtrack.src = "audio/power_pellet.wav";
         } else {
-            soundtrack.src = "https://dominikgorczyca.github.io/Pac-Man/audio/siren1.wav";
+            soundtrack.src = "audio/siren1.wav";
         }
         soundtrack.play()
         characters[i].position = i == 1 ? 406 : startingPositions[i]
         characters[i].characterNode.classList.remove(`${characters[i].name}-visible`, `${characters[i].name}-animation-move`, `${characters[i].name}-retreat`);
+
         characters[i].characterNode.style.transform = "translateX(-1rem)";
         characters[i].characterNode = elements[characters[i].position].children[i];
         characters[i].animationLength = 200;
         characters[i].characterNode.classList.add(`${characters[i].name}-visible`, `${characters[i].name}-revive`)
         characters[i].mode = "normal";
         characters[i].animationLength = 200;
-        characters[i].progress = 0;
-        characters[i].direction = characters[i].directionList[characters[i].progress];
-        getSprite(i);
-        ghostRevive(i);
-       
+        ghostRevive(i, 0);
     }, i > 2 ? 250 : 150)
 }
 //revive animation progress
-function ghostRevive(i) {
-    characters[i].progress = 1;
-    getSprite(i);
-
-    characters[i].characterNode.addEventListener("animationiteration", animationIteration);
-    characters[i].characterNode.addEventListener("animationend", animationEnd);
-}
-function animationIteration (event) {
-    let i;
-    for(let j = 1; j < 5; j++) {
-        if(event.animationName == characters[j].name) {
-            i = j;
-            break;
-        }
+function ghostRevive(i, progress) {
+    if (characters[i].direction != characters[i].directionList[progress] &&
+        characters[i].directionList[progress] != undefined &&
+        characters[i].mode != "frightened") {
+        characters[i].direction = characters[i].directionList[progress];
+        getSprite(i);
     }
-    characters[i].direction = characters[i].directionList[characters[i].progress];
-    getSprite(i);
-    characters[i].progress++;
-    if (characters[i].progress != characters[i].directionList.length && newLevel == undefined) {
+
+    if (progress != characters[i].directionList.length && newLevel == undefined) {
         if (characters[0].status == "freeze") {
             characters[i].characterNode.style.animationPlayState = "paused";
+        } else {
+            characters[i].characterNode.style.animationPlayState = "running";
         }
-    }
-}
-function animationEnd (event) {
-    //there are two animations but I need to catch only one so I am filtering out the the long
-    if(event.animationName.length > 6) {
-        return;
-    }
-    let i;
 
-    for(let j = 1; j < 5; j++) {
-        if(event.animationName == characters[j].name) {
-            i = j;
-            break;
-        }
+        setTimeout(() => {
+            characters[i].animationStart = performance.now();
+            if (characters[0].status != "freeze") {
+                progress++;
+                characters[i].animationLength = 200;
+            }
+
+            ghostRevive(i, progress)
+        }, characters[i].animationLength);
+    } else if (newLevel == undefined) {
+        characters[i].characterNode.classList.remove(`${characters[i].name}-visible`, `${characters[i].name}-revive`)
+        characters[i].position = 322;
+        characters[i].characterNode = elements[characters[i].position].children[i];
+        characters[i].characterNode.classList.add(`${characters[i].name}-visible`);
+        characters[i].status = "normal"
+        characters[i].direction = "ArrowLeft"
+        getSprite(i);
+        characterMove(i);
     }
-    characters[i].characterNode.removeEventListener("animationiteration", animationIteration);
-    characters[i].characterNode.removeEventListener("animationend", animationEnd);
-    characters[i].characterNode.classList.remove(`${characters[i].name}-visible`, `${characters[i].name}-revive`)
-    characters[i].position = 322;
-    characters[i].characterNode = elements[characters[i].position].children[i];
-    characters[i].characterNode.classList.add(`${characters[i].name}-visible`);
-    characters[i].status = "normal"
-    characters[i].direction = "ArrowLeft"
-    getSprite(i);
-    characterMove(i);
 }
 function gameOver() {
     stopAnimations();
@@ -838,10 +831,10 @@ function gameOver() {
         }
 
         characters[0].characterNode.classList.add("yellow-death-animation");
-        sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/death_1.wav";
+        sound.src = "audio/death_1.wav";
         sound.play();
         setTimeout(() => {
-            sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/death_2.wav";
+            sound.src = "audio/death_2.wav";
             sound.play();
         }, 1400)
 
@@ -880,7 +873,7 @@ function gameOver() {
 function gameWin() {
     stopAnimations();
     newLevel = true;
-    sound.src = "https://dominikgorczyca.github.io/Pac-Man/audio/extend.wav";
+    sound.src = "audio/extend.wav";
     sound.play();
 
     setTimeout(() => {
