@@ -100,18 +100,29 @@ body {
 
 /* OBJECTS AND WALLS  */
 .wall {
-    object-fit: cover;
-    content: url("map.png");
+    background-image: url("map.png");
     z-index: 1;
 }
 @media (max-width: 600px), (max-height: 700px) {
     .wall {
-        content: url("small_map.png");
+        background-image: url("small_map.png");
     }
 }
 
 .blank {
     background-color: black;
+}
+
+.wall > * {
+    box-sizing: border-box;
+    background-color: black;
+    display: block;
+    position: relative;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: .2rem solid #161693;
+    border-radius: 80%;
+    z-index: 1;
 }
 
 .point,
@@ -132,6 +143,11 @@ body {
     border: .4rem solid black;
     border-radius: 45%;
     background-color: #ffb897;
+}
+.gate {
+    background-color: #ffb897;
+    border-top: .7rem solid black;
+    border-bottom: .7rem solid black;
 }
 
 /* CHARACTERS */

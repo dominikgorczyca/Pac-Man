@@ -237,7 +237,7 @@ function makeLevel() {
             }
         } else {
             element.className = "wall"
-            element.style.objectPosition = `-${gameArray[i] * 2}rem 0`;
+            element.style.backgroundPosition = `-${gameArray[i] * 2}rem 0`;
         }
 
         gameBoard.append(element);
