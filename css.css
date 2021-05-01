@@ -78,15 +78,13 @@ body {
 .live {
   width: 3.2rem;
   height: 2.6rem;
-  -o-object-fit: none;
-     object-fit: none;
-  -o-object-position: -26rem -3.2rem;
-     object-position: -26rem -3.2rem;
+  background-image: url("sprites.png");
+  background-position: -26rem -3.2rem;
 }
 
 @media (max-width: 600px), (max-height: 700px) {
   .live {
-    content: url(sprites_small.png);
+    background-image: url(sprites_small.png);
   }
 }
 
@@ -740,109 +738,109 @@ body {
 
 @-webkit-keyframes blink {
   0% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   12.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
   25% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   37.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
   50% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   62.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
   75% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   87.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
 }
 
 @keyframes blink {
   0% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   12.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
   25% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   37.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
   50% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   62.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
   75% {
-    background-color: white;
+    background-position-y: -2rem;
   }
   87.5% {
-    background-color: #161693;
+    background-position-y: 0;
   }
 }
 
 @-webkit-keyframes blink2 {
   0% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   12.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
   25% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   37.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
   50% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   62.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
   75% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   87.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
 }
 
 @keyframes blink2 {
   0% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   12.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
   25% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   37.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
   50% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   62.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
   75% {
-    border-color: white;
+    background-position-y: -2rem;
   }
   87.5% {
-    border-color: #161693;
+    background-position-y: 0;
   }
 }
 
